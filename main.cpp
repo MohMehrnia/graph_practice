@@ -20,7 +20,6 @@ class Graph {
 private:
     inline void printEdgeVertex(vertex j) {
         cout << " (V = " << this->countries[j.first].country << " , " << "W = " << j.second << " ),";
-
     }
 
     string ltrim(std::string str) {
@@ -195,68 +194,74 @@ public:
         printAsDFS(0);
     }
 
+    set<int> difference(set<int> first, set<int> second) {
+        set<int>::iterator it;
+        set<int> res;
+
+        for (it = first.begin(); it != first.end(); it++) {
+            if (second.find(*it) == second.end())
+                res.insert(*it);
+        }
+
+        return res;
+    }
+
+    Graph* primsMST(int start) {
+        int n = this->graphSize;
+        Graph *tree = this;
+        tree->adjList->clear();
+        set<int> B, N, diff;
+        B.insert(start);
+
+        for (int u = 0; u < n; u++) {
+            N.insert(u);
+        }
+
+        while (B != N) {
+            int min = 9999;
+            int v, par;
+            diff = difference(N, B);
+
+            for (int u = 0; u < n; u++) {
+                if (B.find(u) != B.end()) {
+                    for (vector<pair<int, int>>::iterator
+                                 j = this->adjList[u].begin();
+                         j != this->adjList[u].end();
+                         j++) {
+                        if (diff.find(j->first) != diff.end()) {
+                            if (min > j->second) {
+                                min = j->second;
+                                par = u;
+                                v = j->first;
+                            }
+                        }
+                    }
+                }
+            }
+
+            B.insert(v);
+            cout << par << "->" << v << "," << min;
+            cout << v << "->" << par << "," << min;
+            tree->addVertex(par, v, min);
+            tree->addVertex(v, par, min);
+        }
+        return tree;
+    }
+
     ~Graph() {
         delete[] adjList;
     }
 
 };
 
-set<int> difference(set<int> first, set<int> second) {
-    set<int>::iterator it;
-    set<int> res;
-
-    for (it = first.begin(); it != first.end(); it++) {
-        if (second.find(*it) == second.end())
-            res.insert(*it);
-    }
-
-    return res;
-}
-
-Graph primsMST(Graph g, int start) {
-    int n = g.graphSize;
-    set<int> B, N, diff;
-    Graph tree(n);
-    B.insert(start);
-
-    for (int u = 0; u < n; u++) {
-        N.insert(u);
-    }
-
-    while (B != N) {
-        int min = 9999;
-        int v, par;
-        diff = difference(N, B);
-
-        for (int u = 0; u < n; u++) {
-            if (B.find(u) != B.end()) {
-                for (vector<pair<int, int>>::iterator
-                             j = g.adjList[u].begin();
-                     j != g.adjList[u].end();
-                     ++j) {
-                    if (diff.find(j->first) != diff.end()) {
-                        if (min > j->second) {
-                            min = j->second;
-                            par = u;
-                            v = j->first;
-                        }
-                    }
-                }
-            }
-        }
-
-        B.insert(v);
-        tree.addVertex(par, v, min);
-        tree.addVertex(v, par, min);
-    }
-    return tree;
-}
 
 int main() {
     Graph citiesGraph(5);
     citiesGraph.fillGraphFromFile();
 
-    citiesGraph.printAsList();
-    citiesGraph.printAsBFS();
-    citiesGraph.printAsDFS();
+    // citiesGraph.printAsList();
+    // citiesGraph.printAsBFS();
+    // citiesGraph.printAsDFS();
+    citiesGraph.primsMST(0);
+    return 0;
 }
