@@ -3,6 +3,7 @@
 #include <stack>
 #include "rapidcsv.h"
 #include <algorithm>
+#include <regex>
 
 using namespace std;
 
@@ -21,6 +22,18 @@ class Graph {
     inline void printEdgeVertex(vertex j) {
         cout << " (V = " << j.first << " , " << "W = " << j.second << " ),";
 
+    }
+
+    string ltrim(std::string str) {
+        return std::regex_replace(str, std::regex("^\\s+"), std::string(""));
+    }
+
+    string rtrim(std::string str) {
+        return std::regex_replace(str, std::regex("\\s+$"), std::string(""));
+    }
+
+    string trim(std::string str) {
+        return ltrim(rtrim(str));
     }
 
     void printAsBFS(int start) {
@@ -121,16 +134,18 @@ public:
             int cityListIndex = 0;
             while (cityListIndex <= connectedList.size() - 1) {
                 vector<string> connectedCity = tokenize(connectedList[cityListIndex], '-');
-                addVertex(index, getCountryIndex(connectedCity[0].c_str()), atoi(connectedCity[1].c_str()));
+                int des = getCountryIndex(connectedCity[0].c_str());
+                int weight = atoi(connectedCity[1].c_str());
+                addVertex(index, des, weight);
                 cityListIndex++;
             }
-
+            index++;
         }
     };
 
     int getCountryIndex(string key) {
         for (size_t i = 0; i < this->countries.size(); ++i)
-            if (this->countries[i].country == key)
+            if (this->countries[i].country == trim(key))
                 return i;
         return -1;
     }
@@ -193,7 +208,7 @@ int main() {
 //    citiesGraph.addVertex(2, 4, 4);
 //    citiesGraph.addVertex(0, 3, 5);
 
-//    citiesGraph.printAsList();
-//    citiesGraph.printAsBFS();
-//    citiesGraph.printAsDFS();
+    citiesGraph.printAsList();
+    citiesGraph.printAsBFS();
+    citiesGraph.printAsDFS();
 }
