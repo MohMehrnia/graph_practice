@@ -1,0 +1,179 @@
+        -:    0:Source:/home/mohammad/MySourceCodes/c++/graph_Practice/main.cpp
+        -:    0:Graph:/home/mohammad/MySourceCodes/c++/graph_Practice/cmake-build-debug-coverage/CMakeFiles/graph_Practice.dir/main.cpp.gcno
+        -:    0:Data:/home/mohammad/MySourceCodes/c++/graph_Practice/cmake-build-debug-coverage/CMakeFiles/graph_Practice.dir/main.cpp.gcda
+        -:    0:Runs:1
+        -:    1:#include <iostream>
+        -:    2:#include "rapidcsv.h"
+        -:    3:
+        -:    4:using namespace std;
+        -:    5:
+        -:    6:struct nodeInfo {
+        -:    7:    string country;
+        -:    8:    string adjacency_list;
+        -:    9:};
+        -:   10:
+        -:   11:struct adjNode {
+        -:   12:    int val;
+        -:   13:    int cost;
+        -:   14:    adjNode *next;
+        -:   15:};
+        -:   16:
+        -:   17:struct graphEdge {
+        -:   18:    int start_ver, end_ver, weight;
+        -:   19:};
+        -:   20:
+        -:   21:class DiaGraph {
+function _ZN8DiaGraph14getAdjListNodeEiiP7adjNode called 6 returned 100% blocks executed 100%
+        6:   22:    adjNode *getAdjListNode(int value, int weight, adjNode *head) {
+        6:   23:        adjNode *newNode = new adjNode;
+        6:   23-block  0
+call    0 returned 6
+        6:   24:        newNode->val = value;
+        6:   25:        newNode->cost = weight;
+        -:   26:
+        6:   27:        newNode->next = head;
+        6:   28:        return newNode;
+        -:   29:    }
+        -:   30:
+        -:   31:    int N;
+        -:   32:public:
+        -:   33:    adjNode **head;
+        -:   34:
+function _ZN8DiaGraphC2EP9graphEdgeii called 1 returned 100% blocks executed 93%
+        1:   35:    DiaGraph(graphEdge edges[], int n, int N) {
+       7*:   36:        head = new adjNode *[N]();
+        1:   36-block  0
+branch  0 taken 1 (fallthrough)
+branch  1 taken 0
+        1:   36-block  1
+    %%%%%:   36-block  2
+call    2 never executed
+        1:   36-block  3
+call    3 returned 1
+        7:   36-block  4
+branch  4 taken 6 (fallthrough)
+branch  5 taken 1
+        6:   36-block  5
+        1:   37:        this->N = N;
+        7:   38:        for (int i = 0; i < N; ++i)
+        1:   38-block  0
+        7:   38-block  1
+branch  0 taken 6 (fallthrough)
+branch  1 taken 1
+        6:   39:            head[i] = nullptr;
+        6:   39-block  0
+        7:   40:        for (unsigned i = 0; i < n; i++) {
+        1:   40-block  0
+        7:   40-block  1
+branch  0 taken 6 (fallthrough)
+branch  1 taken 1
+        6:   41:            int start_ver = edges[i].start_ver;
+        6:   42:            int end_ver = edges[i].end_ver;
+        6:   43:            int weight = edges[i].weight;
+        6:   44:            adjNode *newNode = getAdjListNode(end_ver, weight, head[start_ver]);
+        6:   44-block  0
+call    0 returned 6
+        -:   45:
+        6:   46:            head[start_ver] = newNode;
+        -:   47:        }
+        1:   48:    }
+        -:   49:
+function _ZN8DiaGraphD2Ev called 1 returned 100% blocks executed 100%
+        2:   50:    ~DiaGraph() {
+        7:   51:        for (int i = 0; i < N; i++)
+        1:   51-block  0
+        7:   51-block  1
+branch  0 taken 6 (fallthrough)
+branch  1 taken 1
+        6:   51-block  2
+        6:   52:            delete[] head[i];
+        6:   52-block  0
+branch  0 taken 5 (fallthrough)
+branch  1 taken 1
+        5:   52-block  1
+call    2 returned 5
+        1:   53:        delete[] head;
+        1:   53-block  0
+branch  0 taken 1 (fallthrough)
+branch  1 taken 0
+        1:   53-block  1
+call    2 returned 1
+        1:   54:    }
+        -:   55:};
+        -:   56:
+function _Z15display_AdjListP7adjNodei called 6 returned 100% blocks executed 100%
+       12:   57:void display_AdjList(adjNode *ptr, int i) {
+       12:   58:    while (ptr != nullptr) {
+       12:   58-block  0
+branch  0 taken 6 (fallthrough)
+branch  1 taken 6
+        6:   59:        cout << "(" << i << ", " << ptr->val
+        6:   59-block  0
+call    0 returned 6
+call    1 returned 6
+call    2 returned 6
+        6:   60:             << ", " << ptr->cost << ") ";
+call    0 returned 6
+call    1 returned 6
+call    2 returned 6
+call    3 returned 6
+        6:   61:        ptr = ptr->next;
+        -:   62:    }
+        6:   63:    cout << endl;
+        6:   63-block  0
+call    0 returned 6
+        6:   64:}
+        -:   65:
+function main called 1 returned 100% blocks executed 87%
+        1:   66:int main() {
+        1:   67:    graphEdge edges[] = {
+        -:   68:            // (x, y, w) -> edge from x to y with weight w
+        -:   69:            {0, 1, 2},
+        -:   70:            {0, 2, 4},
+        -:   71:            {1, 4, 3},
+        -:   72:            {2, 3, 2},
+        -:   73:            {3, 1, 4},
+        -:   74:            {4, 3, 3}
+        -:   75:    };
+        1:   76:    int N = 6;
+        1:   77:    int n = sizeof(edges) / sizeof(edges[0]);
+        1:   78:    DiaGraph diagraph(edges, n, N);
+        1:   78-block  0
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+    $$$$$:   78-block  1
+call    3 never executed
+        1:   79:    cout << "Graph adjacency list " << endl << "(start_vertex, end_vertex, weight):" << endl;
+        1:   79-block  0
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        1:   79-block  1
+call    3 returned 1
+branch  4 taken 1 (fallthrough)
+branch  5 taken 0 (throw)
+        1:   79-block  2
+call    6 returned 1
+branch  7 taken 1 (fallthrough)
+branch  8 taken 0 (throw)
+        1:   79-block  3
+call    9 returned 1
+branch 10 taken 1 (fallthrough)
+branch 11 taken 0 (throw)
+        7:   80:    for (int i = 0; i < N; i++) {
+        1:   80-block  0
+        7:   80-block  1
+branch  0 taken 6 (fallthrough)
+branch  1 taken 1
+        6:   80-block  2
+        6:   81:        display_AdjList(diagraph.head[i], i);
+        6:   81-block  0
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   82:    }
+        1:   83:    return 0;
+        1:   83-block  0
+call    0 returned 1
+        -:   84:}

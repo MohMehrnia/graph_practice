@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mohammad/MySourceCodes/c++/graph_Practice/main.cpp
+iostream
+-
+queue
+-
+stack
+-
+rapidcsv.h
+/home/mohammad/MySourceCodes/c++/graph_Practice/rapidcsv.h
+
+/home/mohammad/MySourceCodes/c++/graph_Practice/rapidcsv.h
+algorithm
+-
+cassert
+-
+cmath
+-
+codecvt
+-
+fstream
+-
+functional
+-
+iostream
+-
+map
+-
+sstream
+-
+string
+-
+typeinfo
+-
+vector
+-
+BaseTsd.h
+-
+
