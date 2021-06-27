@@ -176,7 +176,7 @@ public:
 
     void printAsList() {
         for (size_t i = 0; i < this->graphSize; ++i) {
-            cout << i << " -> ";
+            cout << this->countries[i].country << " -> ";
             for (vector<pair<int, int>>::iterator
                          j = this->adjList[i].begin();
                  j != this->adjList[i].end();
