@@ -4,6 +4,8 @@
 #include "rapidcsv.h"
 #include <algorithm>
 #include <regex>
+#include<list>
+#include<set>
 
 using namespace std;
 
@@ -15,12 +17,9 @@ struct countryInfo {
 };
 
 class Graph {
-    vector<vertex> *adjList;
-    size_t graphSize;
-    vector<countryInfo> countries;
-
+private:
     inline void printEdgeVertex(vertex j) {
-        cout << " (V = " << j.first << " , " << "W = " << j.second << " ),";
+        cout << " (V = " << this->countries[j.first].country << " , " << "W = " << j.second << " ),";
 
     }
 
@@ -45,7 +44,7 @@ class Graph {
         bfsQueue.push(start);
         while (!bfsQueue.empty()) {
             int front = bfsQueue.front();
-            cout << front << " ";
+            cout << countries[front].country << " ";
             bfsQueue.pop();
             for (vector<vertex>::iterator i = this->adjList[front].begin();
                  i != this->adjList[front].end();
@@ -69,7 +68,7 @@ class Graph {
             dfsStack.pop();
             if (!visited[top]) {
                 visited[top] = true;
-                cout << top << " ";
+                cout << countries[top].country << " ";
             }
             for (vector<vertex>::iterator i = this->adjList[top].begin();
                  i != this->adjList[top].end();
@@ -83,6 +82,10 @@ class Graph {
     }
 
 public:
+    vector<vertex> *adjList;
+    size_t graphSize;
+    vector<countryInfo> countries;
+
     Graph(size_t graphSize) {
         this->graphSize = graphSize;
         adjList = new vector<vertex>[graphSize];
@@ -198,15 +201,60 @@ public:
 
 };
 
+set<int> difference(set<int> first, set<int> second) {
+    set<int>::iterator it;
+    set<int> res;
+
+    for (it = first.begin(); it != first.end(); it++) {
+        if (second.find(*it) == second.end())
+            res.insert(*it);
+    }
+
+    return res;
+}
+
+Graph primsMST(Graph g, int start) {
+    int n = g.graphSize;
+    set<int> B, N, diff;
+    Graph tree(n);
+    B.insert(start);
+
+    for (int u = 0; u < n; u++) {
+        N.insert(u);
+    }
+
+    while (B != N) {
+        int min = 9999;
+        int v, par;
+        diff = difference(N, B);
+
+        for (int u = 0; u < n; u++) {
+            if (B.find(u) != B.end()) {
+                for (vector<pair<int, int>>::iterator
+                             j = g.adjList[u].begin();
+                     j != g.adjList[u].end();
+                     ++j) {
+                    if (diff.find(j->first) != diff.end()) {
+                        if (min > j->second) {
+                            min = j->second;
+                            par = u;
+                            v = j->first;
+                        }
+                    }
+                }
+            }
+        }
+
+        B.insert(v);
+        tree.addVertex(par, v, min);
+        tree.addVertex(v, par, min);
+    }
+    return tree;
+}
+
 int main() {
     Graph citiesGraph(5);
     citiesGraph.fillGraphFromFile();
-
-//    citiesGraph.addVertex(0, 1, 1);
-//    citiesGraph.addVertex(1, 2, 2);
-//    citiesGraph.addVertex(2, 0, 3);
-//    citiesGraph.addVertex(2, 4, 4);
-//    citiesGraph.addVertex(0, 3, 5);
 
     citiesGraph.printAsList();
     citiesGraph.printAsBFS();
