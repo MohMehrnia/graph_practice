@@ -10,13 +10,176 @@
 using namespace std;
 
 typedef pair<int, int> vertex;
+typedef pair<int, int> iPair;
+
 
 struct countryInfo {
     string country;
     string adjacency_List;
 };
 
-class Graph {
+struct Graph {
+    int V, E;
+    vector<pair<int, iPair> > edges;
+    vector<countryInfo> countries;
+    Graph(int V, int E) {
+        this->V = V;
+        this->E = E;
+    }
+    string ltrim(std::string str) {
+        return std::regex_replace(str, std::regex("^\\s+"), std::string(""));
+    }
+
+    string rtrim(std::string str) {
+        return std::regex_replace(str, std::regex("\\s+$"), std::string(""));
+    }
+
+    string trim(std::string str) {
+        return ltrim(rtrim(str));
+    }
+    void addEdge(int u, int v, int w) {
+        edges.push_back({w, {u, v}});
+    }
+
+    int getCountryIndex(string key) {
+        for (size_t i = 0; i < this->countries.size(); ++i)
+            if (this->countries[i].country == trim(key))
+                return i;
+        return -1;
+    }
+    vector<string> tokenize(const string &s, char c) {
+        auto end = s.cend();
+        auto start = end;
+        std::vector<std::string> v;
+        for (auto it = s.cbegin(); it != end; ++it) {
+            if (*it != c) {
+                if (start == end)
+                    start = it;
+                continue;
+            }
+            if (start != end) {
+                v.emplace_back(start, it);
+                start = end;
+            }
+        }
+        if (start != end)
+            v.emplace_back(start, end);
+        return v;
+    }
+
+    string removeAll(string str, char c) {
+        size_t offset = 0;
+        size_t size = str.size();
+
+        size_t i = 0;
+        while (i < size - offset) {
+            if (str[i + offset] == c) {
+                offset++;
+            }
+
+            if (offset != 0) {
+                str[i] = str[i + offset];
+            }
+
+            i++;
+        }
+
+        str.resize(size - offset);
+        return str;
+    }
+    void fillGraphFromFile() {
+        int index = 0;
+
+        rapidcsv::Document doc("/home/mohammad/MySourceCodes/c++/graph_Practice/texas_counties_adjacency.csv");
+        vector<string> results;
+
+        while (index <= doc.GetRowCount() - 1) {
+            results = doc.GetRow<string>(index);
+            this->countries.push_back({results[0].c_str(), results[1].c_str()});
+            index++;
+        }
+
+        index = 0;
+        while (index <= this->countries.size() - 1) {
+            string adList = removeAll(this->countries[index].adjacency_List, '(');
+            adList = removeAll(adList, ')');
+            vector<string> connectedList = tokenize(adList, ';');
+            int cityListIndex = 0;
+            while (cityListIndex <= connectedList.size() - 1) {
+                vector<string> connectedCity = tokenize(connectedList[cityListIndex], '-');
+                int des = getCountryIndex(connectedCity[0].c_str());
+                int weight = atoi(connectedCity[1].c_str());
+                addEdge(index, des, weight);
+                cityListIndex++;
+            }
+            index++;
+        }
+    };
+
+    int kruskalMST();
+};
+
+
+struct DisjointSets {
+    int *parent, *rnk;
+    int n;
+    DisjointSets(int n) {
+        this->n = n;
+        parent = new int[n + 1];
+        rnk = new int[n + 1];
+        for (int i = 0; i <= n; i++) {
+            rnk[i] = 0;
+            parent[i] = i;
+        }
+    }
+    int find(int u)
+    {
+        if (u != parent[u])
+            parent[u] = find(parent[u]);
+        return parent[u];
+    }
+    void merge(int x, int y)
+    {
+        x = find(x), y = find(y);
+        if (rnk[x] > rnk[y])
+            parent[y] = x;
+        else
+            parent[x] = y;
+
+        if (rnk[x] == rnk[y])
+            rnk[y]++;
+    }
+};
+
+int Graph::kruskalMST()
+{
+    int mst_wt = 0;
+
+    sort(edges.begin(), edges.end());
+    DisjointSets ds(V);
+    vector< pair<int, iPair> >::iterator it;
+    for (it=edges.begin(); it!=edges.end(); it++)
+    {
+        int u = it->second.first;
+        int v = it->second.second;
+
+        int set_u = ds.find(u);
+        int set_v = ds.find(v);
+
+        if (set_u != set_v)
+        {
+            cout << u << " - " << v << endl;
+
+            mst_wt += it->first;
+
+            ds.merge(set_u, set_v);
+        }
+    }
+
+    return mst_wt;
+}
+
+class Graph_ {
 private:
     inline void printEdgeVertex(vertex j) {
         cout << " (V = " << this->countries[j.first].country << " , " << "W = " << j.second << " ),";
@@ -85,7 +248,7 @@ public:
     size_t graphSize;
     vector<countryInfo> countries;
 
-    Graph(size_t graphSize) {
+    Graph_(size_t graphSize) {
         this->graphSize = graphSize;
         adjList = new vector<vertex>[graphSize];
     }
@@ -206,9 +369,9 @@ public:
         return res;
     }
 
-    Graph primsMST(int start) {
+    Graph_ primsMST(int start) {
         int n = this->graphSize;
-        Graph tree = Graph(10);
+        Graph_ tree = Graph_(10);
         tree.adjList->clear();
         set<int> B, N, diff;
         B.insert(start);
@@ -248,7 +411,7 @@ public:
         return tree;
     }
 
-    ~Graph() {
+    ~Graph_() {
         delete[] adjList;
     }
 
@@ -256,12 +419,18 @@ public:
 
 
 int main() {
-    Graph citiesGraph(5);
-    citiesGraph.fillGraphFromFile();
+    // Graph_ citiesGraph(5);
+    // citiesGraph.fillGraphFromFile();
 
     // citiesGraph.printAsList();
     // citiesGraph.printAsBFS();
     // citiesGraph.printAsDFS();
-    citiesGraph.primsMST(0);
+    //citiesGraph.primsMST(0);
+
+    int V = 256, E = 256;
+    Graph g(V, E);
+    g.fillGraphFromFile();
+    int mst_wt = g.kruskalMST();
+    cout << "\nWeight of MST is " << mst_wt;
     return 0;
 }
