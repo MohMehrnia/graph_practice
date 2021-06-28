@@ -206,10 +206,10 @@ public:
         return res;
     }
 
-    Graph* primsMST(int start) {
+    Graph primsMST(int start) {
         int n = this->graphSize;
-        Graph *tree = this;
-        tree->adjList->clear();
+        Graph tree = Graph(10);
+        tree.adjList->clear();
         set<int> B, N, diff;
         B.insert(start);
 
@@ -242,8 +242,8 @@ public:
             B.insert(v);
             cout << par << "->" << v << "," << min;
             cout << v << "->" << par << "," << min;
-            tree->addVertex(par, v, min);
-            tree->addVertex(v, par, min);
+            //tree.addVertex(par, v, min);
+            //tree.addVertex(v, par, min);
         }
         return tree;
     }
