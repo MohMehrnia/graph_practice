@@ -168,7 +168,7 @@ int Graph::kruskalMST()
 
         if (set_u != set_v)
         {
-            cout << u << " - " << v << endl;
+            cout << this->countries[u].country << " - " << this->countries[v].country << endl;
 
             mst_wt += it->first;
 
@@ -403,8 +403,8 @@ public:
             }
 
             B.insert(v);
-            cout << par << "->" << v << "," << min << endl;
-            cout << v << "->" << par << "," << min << endl;
+            cout << this->countries[par].country << "->" << this->countries[v].country << "," << min << endl;
+            cout << this->countries[v].country  << "->" << this->countries[par].country  << "," << min << endl;
             //tree.addVertex(par, v, min);
             //tree.addVertex(v, par, min);
         }
