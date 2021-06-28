@@ -154,7 +154,8 @@ struct DisjointSets {
 int Graph::kruskalMST()
 {
     int mst_wt = 0;
-
+    std::ofstream myfile;
+    myfile.open ("/home/mohammad/MySourceCodes/c++/graph_Practice/kruskal.csv");
     sort(edges.begin(), edges.end());
     DisjointSets ds(V);
     vector< pair<int, iPair> >::iterator it;
@@ -169,13 +170,12 @@ int Graph::kruskalMST()
         if (set_u != set_v)
         {
             cout << this->countries[u].country << " - " << this->countries[v].country << endl;
-
+            myfile<< this->countries[u].country << " ; " << this->countries[v].country << endl;
             mst_wt += it->first;
-
             ds.merge(set_u, set_v);
         }
     }
-
+    myfile.close();
     return mst_wt;
 }
 
@@ -370,6 +370,8 @@ public:
     }
 
     Graph_ primsMST(int start) {
+        std::ofstream myfile;
+        myfile.open ("/home/mohammad/MySourceCodes/c++/graph_Practice/prim.csv");
         int n = this->graphSize;
         Graph_ tree = Graph_(10);
         tree.adjList->clear();
@@ -403,11 +405,14 @@ public:
             }
 
             B.insert(v);
+            myfile << this->countries[par].country << "->" << this->countries[v].country << "," << min << endl;
+            myfile << this->countries[v].country  << "->" << this->countries[par].country  << "," << min << endl;
             cout << this->countries[par].country << "->" << this->countries[v].country << "," << min << endl;
             cout << this->countries[v].country  << "->" << this->countries[par].country  << "," << min << endl;
             //tree.addVertex(par, v, min);
             //tree.addVertex(v, par, min);
         }
+        myfile.close();
         return tree;
     }
 
