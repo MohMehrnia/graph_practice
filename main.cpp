@@ -240,8 +240,8 @@ public:
             }
 
             B.insert(v);
-            cout << par << "->" << v << "," << min;
-            cout << v << "->" << par << "," << min;
+            cout << par << "->" << v << "," << min << endl;
+            cout << v << "->" << par << "," << min << endl;
             //tree.addVertex(par, v, min);
             //tree.addVertex(v, par, min);
         }
