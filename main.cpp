@@ -7,6 +7,7 @@
 #include<list>
 #include<set>
 
+
 using namespace std;
 
 typedef pair<int, int> vertex;
@@ -22,10 +23,12 @@ struct Graph {
     int V, E;
     vector<pair<int, iPair> > edges;
     vector<countryInfo> countries;
+
     Graph(int V, int E) {
         this->V = V;
         this->E = E;
     }
+
     string ltrim(std::string str) {
         return std::regex_replace(str, std::regex("^\\s+"), std::string(""));
     }
@@ -37,6 +40,7 @@ struct Graph {
     string trim(std::string str) {
         return ltrim(rtrim(str));
     }
+
     void addEdge(int u, int v, int w) {
         edges.push_back({w, {u, v}});
     }
@@ -47,6 +51,7 @@ struct Graph {
                 return i;
         return -1;
     }
+
     vector<string> tokenize(const string &s, char c) {
         auto end = s.cend();
         auto start = end;
@@ -87,6 +92,7 @@ struct Graph {
         str.resize(size - offset);
         return str;
     }
+
     void fillGraphFromFile() {
         int index = 0;
 
@@ -123,6 +129,7 @@ struct Graph {
 struct DisjointSets {
     int *parent, *rnk;
     int n;
+
     DisjointSets(int n) {
         this->n = n;
         parent = new int[n + 1];
@@ -132,14 +139,14 @@ struct DisjointSets {
             parent[i] = i;
         }
     }
-    int find(int u)
-    {
+
+    int find(int u) {
         if (u != parent[u])
             parent[u] = find(parent[u]);
         return parent[u];
     }
-    void merge(int x, int y)
-    {
+
+    void merge(int x, int y) {
         x = find(x), y = find(y);
         if (rnk[x] > rnk[y])
             parent[y] = x;
@@ -151,26 +158,22 @@ struct DisjointSets {
     }
 };
 
-int Graph::kruskalMST()
-{
+int Graph::kruskalMST() {
     int mst_wt = 0;
     std::ofstream myfile;
-    myfile.open ("/home/mohammad/MySourceCodes/c++/graph_Practice/kruskal.csv");
+    myfile.open("/home/mohammad/MySourceCodes/c++/graph_Practice/kruskal.csv");
     sort(edges.begin(), edges.end());
     DisjointSets ds(V);
-    vector< pair<int, iPair> >::iterator it;
-    for (it=edges.begin(); it!=edges.end(); it++)
-    {
+    vector<pair<int, iPair> >::iterator it;
+    for (it = edges.begin(); it != edges.end(); it++) {
         int u = it->second.first;
         int v = it->second.second;
 
         int set_u = ds.find(u);
         int set_v = ds.find(v);
 
-        if (set_u != set_v)
-        {
-            cout << this->countries[u].country << " - " << this->countries[v].country << endl;
-            myfile<< this->countries[u].country << " ; " << this->countries[v].country << endl;
+        if (set_u != set_v) {
+            myfile << this->countries[u].country << ',' << this->countries[v].country << ',' << it->first << endl;
             mst_wt += it->first;
             ds.merge(set_u, set_v);
         }
@@ -371,7 +374,7 @@ public:
 
     Graph_ primsMST(int start) {
         std::ofstream myfile;
-        myfile.open ("/home/mohammad/MySourceCodes/c++/graph_Practice/prim.csv");
+        myfile.open("/home/mohammad/MySourceCodes/c++/graph_Practice/prim.csv");
         int n = this->graphSize;
         Graph_ tree = Graph_(10);
         tree.adjList->clear();
@@ -405,10 +408,10 @@ public:
             }
 
             B.insert(v);
-            myfile << this->countries[par].country << "->" << this->countries[v].country << "," << min << endl;
-            myfile << this->countries[v].country  << "->" << this->countries[par].country  << "," << min << endl;
+            myfile << this->countries[par].country << ',' << this->countries[v].country << ',' << min << endl;
+            myfile << this->countries[v].country << ',' << this->countries[par].country << ',' << min << endl;
             cout << this->countries[par].country << "->" << this->countries[v].country << "," << min << endl;
-            cout << this->countries[v].country  << "->" << this->countries[par].country  << "," << min << endl;
+            cout << this->countries[v].country << "->" << this->countries[par].country << "," << min << endl;
             //tree.addVertex(par, v, min);
             //tree.addVertex(v, par, min);
         }
@@ -422,6 +425,51 @@ public:
 
 };
 
+string ltrim(std::string str) {
+    return std::regex_replace(str, std::regex("^\\s+"), std::string(""));
+}
+
+string rtrim(std::string str) {
+    return std::regex_replace(str, std::regex("\\s+$"), std::string(""));
+}
+
+string trim(std::string str) {
+    return ltrim(rtrim(str));
+}
+
+int getCountryIndex(vector<countryInfo> countries, string key) {
+    for (size_t i = 0; i < countries.size(); ++i)
+        if (countries[i].country == trim(key))
+            return i;
+    return -1;
+}
+
+void sortOutput(string file) {
+    rapidcsv::Document doc(file);
+    vector<string> results;
+    int index = 0;
+    vector<countryInfo> countries;
+    while (index <= doc.GetRowCount() - 1) {
+        results = doc.GetRow<string>(index);
+
+        int countryIndex = getCountryIndex(countries, results[0].c_str());
+        if (countryIndex == -1) {
+            string s = '(' + results[1] + '-' + results[2] + ')' + ';';
+            countries.push_back({results[0], s});
+        } else {
+            string s = '(' + results[1] + '-' + results[2] + ')' + ';';
+            countries[countryIndex].adjacency_List += s;
+        }
+        index++;
+    }
+
+    std::ofstream myfile;
+    myfile.open("/home/mohammad/MySourceCodes/c++/graph_Practice/finalOutput.csv");
+    for (int i = 0; i <= countries.size() - 1; i++) {
+        myfile << countries[i].country << ',' << countries[i].adjacency_List << endl;
+    }
+    myfile.close();
+};
 
 int main() {
     // Graph_ citiesGraph(5);
@@ -437,5 +485,6 @@ int main() {
     g.fillGraphFromFile();
     int mst_wt = g.kruskalMST();
     cout << "\nWeight of MST is " << mst_wt;
+    sortOutput("/home/mohammad/MySourceCodes/c++/graph_Practice/kruskal.csv");
     return 0;
 }
